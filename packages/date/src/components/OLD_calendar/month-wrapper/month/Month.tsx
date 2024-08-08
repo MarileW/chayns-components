@@ -1,7 +1,7 @@
 import type { Locale } from 'date-fns';
 import React, { FC, useState } from 'react';
-import type { Categories, EMonth, HighlightedDates } from '../../../../types/calendar';
-import { formatMonth } from '../../../../utils/calendar';
+import type { Categories, EMonth, HighlightedDates } from '../../../../types/OLD_calendar';
+import { formatMonth } from '../../../../utils/OLD_calendar';
 import DayWrapper from './day-wrapper/DayWrapper';
 import { StyledMonth, StyledMonthHead, StyledMonthName } from './Month.styles';
 import WeekdayWrapper from './weekday-wrapper/WeekdayWrapper';

@@ -1,8 +1,8 @@
-import React, { FC, type ReactElement, useMemo } from 'react';
-import { startOfWeek, endOfWeek, eachDayOfInterval, format } from 'date-fns';
-import { StyledWeekdayWrapper } from './WeekdayWrapper.styles';
-import Weekday from './weekday/Weekday';
 import type { Locale } from 'date-fns';
+import { eachDayOfInterval, endOfWeek, format, startOfWeek } from 'date-fns';
+import React, { FC, useMemo, type ReactElement } from 'react';
+import Weekday from './weekday/Weekday';
+import { StyledWeekdayWrapper } from './WeekdayWrapper.styles';
 
 export type WeekdayWrapperProps = {
     locale?: Locale;

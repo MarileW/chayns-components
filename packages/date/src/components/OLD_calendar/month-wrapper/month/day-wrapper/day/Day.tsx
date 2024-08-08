@@ -4,7 +4,7 @@ import type {
     Categories,
     HighlightedDates,
     HighlightedDateStyles,
-} from '../../../../../../types/calendar';
+} from '../../../../../../types/OLD_calendar';
 import Category from './category/Category';
 import { StyledDay, StyledDayCategoryWrapper, StyledDayNumber } from './Day.styles';
 

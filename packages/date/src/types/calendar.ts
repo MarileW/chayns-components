@@ -1,37 +1,22 @@
 import type { CSSProperties } from 'react';
 
-export interface HighlightedDates {
-    dates: Date[];
-    style: HighlightedDateStyles;
-}
-
-export interface HighlightedDateStyles {
-    backgroundColor: CSSProperties['backgroundColor'];
-    textColor: CSSProperties['color'];
-}
-
-export interface Categories {
+export interface Category {
+    color: CSSProperties['color'];
     id: string;
     dates: Date[];
+}
+
+export interface HighlightedDateStyle {
+    backgroundColor: CSSProperties['backgroundColor'];
     color: CSSProperties['color'];
 }
 
-export interface IMonth {
-    month: EMonth;
-    year: string;
+export interface HighlightedDates {
+    dates: Date[];
+    style: HighlightedDateStyle;
 }
 
-export enum EMonth {
-    January = 1,
-    February,
-    March,
-    April,
-    May,
-    June,
-    July,
-    August,
-    September,
-    October,
-    November,
-    December,
+export interface Period {
+    startDate: Date;
+    endDate?: Date;
 }

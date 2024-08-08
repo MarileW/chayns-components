@@ -1,5 +1,5 @@
 import { format, isAfter, isBefore, startOfMonth } from 'date-fns';
-import type { EMonth, IMonth } from '../types/calendar';
+import type { EMonth, IMonth } from '../types/OLD_calendar';
 
 export const getMonthAndYear = (date: Date): IMonth => {
     const month = date.getMonth() + 1;

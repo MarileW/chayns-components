@@ -1,199 +1,135 @@
-import { Icon } from '@chayns-components/core';
-import { isSameMonth, type Locale } from 'date-fns';
-import { de } from 'date-fns/locale';
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { Categories, HighlightedDates } from '../../types/calendar';
-import { getNewDate, isDateInRange } from '../../utils/calendar';
-import {
-    StyledCalendar,
-    StyledCalendarIconWrapper,
-    StyledCalendarIconWrapperPseudo,
-} from './Calendar.styles';
-import MonthWrapper from './month-wrapper/MonthWrapper';
+import React, { createContext, useMemo, useRef, useState, type FC } from 'react';
+import type { Category, HighlightedDates, Period } from '../../types/calendar';
+import { StyledCalendar } from './Calendar.styles';
 
-const END_DATE = new Date(new Date().setFullYear(new Date().getFullYear() + 100));
+interface ICalendarContext {
+    hoveredDate?: Date;
+    selectedDates: Date[];
+    setHoveredDate?: (date: Date) => void;
+    setSelectedDates?: (dates: Date[]) => void;
+}
 
-export type CalendarProps = {
+export const CalendarContext = createContext<ICalendarContext>({ selectedDates: [] });
+
+export enum CalendarSelectionType {
+    Single = 'Single',
+    Period = 'Period',
+}
+
+type BaseCalendarProps = {
     /**
-     * An array to group dates into a category.
+     * An array of categories to mark dates with different colors.
      */
-    categories?: Categories[];
-    /**
-     * The last Month that can be displayed.
-     */
-    endDate?: Date;
+    categories?: Category[];
     /**
      * An array with dates and corresponding styles to highlight.
      */
     highlightedDates?: HighlightedDates[];
     /**
+     * Whether the calendar is disabled. If true, the user cannot select any date or change the shown month.
+     */
+    isDisabled?: boolean;
+    /**
      * The locale language to format the dates.
      */
     locale?: Locale;
     /**
+     * The last date that can be selected. The month of this date will be the last displayed month.
+     */
+    maxDate?: Date;
+    /**
+     * The first date that can be selected. The month of this date will be the first displayed month.
+     */
+    minDate?: Date;
+};
+
+type SingleCalendarProps = {
+    /**
      * Function to be executed when a date is selected.
-     * @param date
+     * @param date {Date} - The selected date
      */
     onSelect?: (date: Date) => void;
     /**
-     * A date that should be preselected.
+     * The selected date.
      */
     selectedDate?: Date;
     /**
-     * The first Month that can be displayed.
+     * The selected start date of the period.
      */
-    startDate: Date;
+    selectedPeriod: never;
     /**
-     * To disable the Calendar
+     * The type of selection. The default value is `CalendarSelectionType.Single`.
      */
-    isDisabled?: boolean;
+    selectionType?: CalendarSelectionType.Single;
 };
 
+type PeriodCalendarProps = {
+    /**
+     * Function to be executed when a period is selected.
+     * @param period {Period} - The selected period
+     */
+    onSelect?: (period: Period) => void;
+    /**
+     * The selected start date of the period.
+     */
+    selectedDate: never;
+    /**
+     * The selected start date of the period.
+     */
+    selectedPeriod?: Period;
+    /**
+     * The type of selection. The default value is `CalendarSelectionType.Single`.
+     */
+    selectionType?: CalendarSelectionType.Period;
+};
+
+export type CalendarProps = BaseCalendarProps & (SingleCalendarProps | PeriodCalendarProps);
+
 const Calendar: FC<CalendarProps> = ({
-    locale = de,
-    endDate = END_DATE,
-    startDate,
+    categories,
+    maxDate,
+    minDate,
     highlightedDates,
+    isDisabled,
+    locale,
     onSelect,
     selectedDate,
-    categories,
-    isDisabled,
+    selectedPeriod,
+    selectionType = CalendarSelectionType.Single,
 }) => {
-    const [currentDate, setCurrentDate] = useState<Date>();
-    const [shouldRenderTwoMonths, setShouldRenderTwoMonths] = useState(true);
-    const [internalSelectedDate, setInternalSelectedDate] = useState<Date>();
-    const [direction, setDirection] = useState<'left' | 'right'>();
-    const [width, setWidth] = useState(0);
+    const [selectedDates, setSelectedDates] = useState<Date[]>(() => {
+        if (selectionType === CalendarSelectionType.Period && selectedPeriod) {
+            const state = [selectedPeriod.startDate];
+
+            if (selectedPeriod.endDate) state.push(selectedPeriod.endDate);
+
+            return state;
+        }
+
+        if (selectionType === CalendarSelectionType.Single && selectedDate) return [selectedDate];
+
+        return [];
+    });
+
+    const [hoveredDate, setHoveredDate] = useState<Date | undefined>();
 
     const calendarRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (selectedDate) {
-            setInternalSelectedDate(selectedDate);
-        }
-    }, [selectedDate]);
-
-    useEffect(() => {
-        if (calendarRef.current) {
-            const resizeObserver = new ResizeObserver((entries) => {
-                if (entries && entries[0]) {
-                    const observedWidth = entries[0].contentRect.width;
-
-                    setWidth(observedWidth - 30);
-
-                    if (observedWidth < 430) {
-                        setShouldRenderTwoMonths(false);
-                    } else {
-                        setShouldRenderTwoMonths(true);
-                    }
-                }
-            });
-
-            resizeObserver.observe(calendarRef.current);
-
-            return () => {
-                resizeObserver.disconnect();
-            };
-        }
-
-        return () => {};
-    }, []);
-
-    useEffect(() => {
-        const date = new Date();
-
-        setCurrentDate(isDateInRange({ startDate, endDate, currentDate: date }));
-    }, [endDate, startDate]);
-
-    const handleLeftArrowClick = useCallback(() => {
-        setDirection('left');
-
-        setCurrentDate((prevDate) => {
-            if (!prevDate) {
-                return prevDate;
-            }
-
-            const newDate = getNewDate(-1, prevDate);
-
-            return isDateInRange({ startDate, endDate, currentDate: newDate });
-        });
-    }, [endDate, startDate]);
-
-    const handleRightArrowClick = useCallback(() => {
-        setDirection('right');
-
-        setCurrentDate((prevDate) => {
-            if (!prevDate) {
-                return prevDate;
-            }
-
-            const newDate = getNewDate(1, prevDate);
-
-            return isDateInRange({ startDate, endDate, currentDate: newDate });
-        });
-    }, [endDate, startDate]);
-
-    const handleSelect = useCallback(
-        (date: Date) => {
-            setInternalSelectedDate(date);
-
-            if (typeof onSelect === 'function') {
-                onSelect(date);
-            }
-        },
-        [onSelect],
+    const calendarContextValue: ICalendarContext = useMemo(
+        () => ({
+            hoveredDate,
+            selectedDates,
+            setHoveredDate,
+            setSelectedDates,
+        }),
+        [hoveredDate, selectedDates],
     );
 
-    const handleAnimationFinished = () => {
-        setDirection(undefined);
-    };
-
-    const ShouldShowLeftArrow = useMemo(() => {
-        if (!currentDate) {
-            return false;
-        }
-
-        return !isSameMonth(currentDate, startDate);
-    }, [currentDate, startDate]);
-
-    const ShouldShowRightArrow = useMemo(() => {
-        if (!currentDate) {
-            return false;
-        }
-
-        return !isSameMonth(currentDate, endDate);
-    }, [currentDate, endDate]);
-
     return (
-        <StyledCalendar ref={calendarRef} $isDisabled={isDisabled}>
-            {ShouldShowLeftArrow ? (
-                <StyledCalendarIconWrapper onClick={handleLeftArrowClick}>
-                    <Icon icons={['fa fa-angle-left']} />
-                </StyledCalendarIconWrapper>
-            ) : (
-                <StyledCalendarIconWrapperPseudo />
-            )}
-            {currentDate && (
-                <MonthWrapper
-                    shouldRenderTwo={shouldRenderTwoMonths}
-                    currentDate={currentDate}
-                    width={width}
-                    locale={locale}
-                    direction={direction}
-                    onSelect={handleSelect}
-                    selectedDate={internalSelectedDate}
-                    highlightedDates={highlightedDates}
-                    categories={categories}
-                    onAnimationFinished={handleAnimationFinished}
-                />
-            )}
-            {ShouldShowRightArrow ? (
-                <StyledCalendarIconWrapper onClick={handleRightArrowClick}>
-                    <Icon icons={['fa fa-angle-right']} />
-                </StyledCalendarIconWrapper>
-            ) : (
-                <StyledCalendarIconWrapperPseudo />
-            )}
+        <StyledCalendar ref={calendarRef}>
+            <CalendarContext.Provider value={calendarContextValue}>
+                Kalender
+            </CalendarContext.Provider>
         </StyledCalendar>
     );
 };

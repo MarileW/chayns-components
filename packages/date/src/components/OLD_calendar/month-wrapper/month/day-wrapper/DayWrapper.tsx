@@ -1,8 +1,8 @@
-import React, { FC, type ReactElement, useCallback, useMemo } from 'react';
-import { startOfMonth, startOfWeek, addDays, isSameMonth, isSameDay } from 'date-fns';
-import { StyledDayWrapper } from './DayWrapper.styles';
+import { addDays, isSameDay, isSameMonth, startOfMonth, startOfWeek } from 'date-fns';
+import React, { FC, useCallback, useMemo, type ReactElement } from 'react';
+import type { Categories, EMonth, HighlightedDates } from '../../../../../types/OLD_calendar';
 import Day from './day/Day';
-import type { Categories, EMonth, HighlightedDates } from '../../../../../types/calendar';
+import { StyledDayWrapper } from './DayWrapper.styles';
 
 export type DayWrapperProps = {
     month: EMonth;
