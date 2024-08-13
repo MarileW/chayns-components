@@ -1,7 +1,9 @@
 import { Meta, StoryFn } from '@storybook/react';
 import { useCallback, useEffect, useState } from 'react';
-import { OnDevalueHandler } from '../lib/types';
-import DevalueSlider, { DevalueSliderProps } from '../src/components/DevalueSlider';
+import DevalueSlider, {
+    DevalueSliderOnDevalueHandler,
+    DevalueSliderProps,
+} from '../src/components/DevalueSlider';
 import { sleep } from '../src/utils/common';
 
 export default {
@@ -26,12 +28,14 @@ const Template: StoryFn<typeof DevalueSlider> = (args: DevalueSliderProps) => {
     return <DevalueSlider {...args} />;
 };
 
+//
 const LiveUpdateTemplate: StoryFn<typeof DevalueSlider> = (args: DevalueSliderProps) => {
     const [devalueTime, setDevalueTime] = useState(undefined);
 
     useEffect(() => {
         setTimeout(() => {
             setDevalueTime(new Date());
+            console.log('setting devalue time');
         }, 5000);
     }, []);
 
@@ -39,7 +43,7 @@ const LiveUpdateTemplate: StoryFn<typeof DevalueSlider> = (args: DevalueSliderPr
 };
 
 const FailingDevalueTemplate: StoryFn<typeof DevalueSlider> = (args: DevalueSliderProps) => {
-    const handleDevalue = useCallback<OnDevalueHandler>(async () => {
+    const handleDevalue = useCallback<DevalueSliderOnDevalueHandler>(async () => {
         await sleep(3000);
         return { success: false };
     }, []);
@@ -48,7 +52,7 @@ const FailingDevalueTemplate: StoryFn<typeof DevalueSlider> = (args: DevalueSlid
 };
 
 const SuccessDevalueTemplate: StoryFn<typeof DevalueSlider> = (args: DevalueSliderProps) => {
-    const handleDevalue = useCallback<OnDevalueHandler>(async () => {
+    const handleDevalue = useCallback<DevalueSliderOnDevalueHandler>(async () => {
         await sleep(3000);
         return { success: true };
     }, []);

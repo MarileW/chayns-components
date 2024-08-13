@@ -21,6 +21,8 @@ export const ListItemsWithGridImage = Template.bind({});
 
 export const ListItemsWithRightElements = Template.bind({});
 
+export const ListItemsWithSeparator = Template.bind({});
+
 export const ListItemsWithButtonAsRightElements = Template.bind({});
 
 export const ListItemsWithHoverItem = Template.bind({});
@@ -130,35 +132,66 @@ ListItemsWithRightElements.args = {
                     1
                 </Badge>,
             ]}
-            subtitle="Sadipscing elitr dolor sit"
             title="Lorem ipsum dolor sit amet, consetetur sadipscing elitr"
         />,
         <ListItem
             images={[locationImages[1]]}
-            rightElements={[
-                <Badge backgroundColor="red" fontColor="white">
-                    2
-                </Badge>,
-            ]}
+            rightElements={['08:59 Uhr']}
             shouldShowSingleRightElementCentered
-            subtitle="Dolor sit ipsum amet"
-            title="Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet"
+            title="No sea takimata sanctus est Lorem ipsum dolor sit amet"
         />,
         <ListItem
             images={[locationImages[1]]}
-            rightElements={['07:51 Uhr', undefined]}
+            rightElements={['08:58 Uhr']}
             subtitle="Dolor sit ipsum amet"
-            title="Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet"
+            title="gubergren, no sea takimata"
         />,
         <ListItem
             images={[locationImages[2]]}
             rightElements={[
+                '08:57 Uhr',
                 <Badge backgroundColor="red" fontColor="white">
                     4
                 </Badge>,
             ]}
             subtitle="Dolor sit ipsum amet"
-            title="Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet"
+            title="sanctus est lorem ipsum dolor sit amet"
+        />,
+    ],
+};
+
+ListItemsWithSeparator.args = {
+    children: [
+        <ListItem
+            images={[locationImages[0]]}
+            subtitle="Sadipscing elitr dolor sit"
+            title="Lorem ipsum dolor sit amet, consetetur sadipscing elitr"
+        />,
+        <ListItem
+            images={[locationImages[1]]}
+            subtitle="Sadipscing elitr dolor sit"
+            title="Lorem ipsum dolor sit amet, consetetur sadipscing elitr"
+        />,
+        <ListItem
+            images={[locationImages[2]]}
+            shouldShowSeparatorBelow
+            subtitle="Sadipscing elitr dolor sit"
+            title="Lorem ipsum dolor sit amet, consetetur sadipscing elitr"
+        />,
+        <ListItem
+            images={[locationImages[0]]}
+            subtitle="Sadipscing elitr dolor sit"
+            title="Lorem ipsum dolor sit amet, consetetur sadipscing elitr"
+        />,
+        <ListItem
+            images={[locationImages[1]]}
+            subtitle="Sadipscing elitr dolor sit"
+            title="Lorem ipsum dolor sit amet, consetetur sadipscing elitr"
+        />,
+        <ListItem
+            images={[locationImages[2]]}
+            subtitle="Sadipscing elitr dolor sit"
+            title="Lorem ipsum dolor sit amet, consetetur sadipscing elitr"
         />,
     ],
 };
@@ -248,7 +281,6 @@ ExpandableListItems.args = {
     children: [
         <ListItem
             images={[images[0]]}
-            subtitle="At vero eos et accusam et justo duo dolores et ea rebum"
             shouldShowRoundImage
             title="Lorem ipsum dolor sit amet, consetetur sadipscing elitr"
         >
@@ -265,7 +297,6 @@ ExpandableListItems.args = {
         </ListItem>,
         <ListItem
             images={[images[1]]}
-            subtitle="Lorem ipsum dolor sit amet"
             shouldShowRoundImage
             title="Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet"
         >

@@ -19,6 +19,7 @@ import {
     StyledListItemHeadContent,
     StyledListItemHeadLeftWrapper,
     StyledListItemHeadRightElement,
+    StyledListItemHeadRightWrapper,
     StyledListItemHeadSubtitle,
     StyledListItemHeadSubtitleText,
     StyledListItemHeadSubtitleTextPseudo,
@@ -90,22 +91,24 @@ const ListItemHead: FC<ListItemHeadProps> = ({
     const closedSubtitle = useElementSize(pseudoSubtitleClosedRef);
     const openedSubtitle = useElementSize(pseudoSubtitleOpenRef);
 
+    const shouldShowSubtitleRow = typeof subtitle === 'string';
+
     useEffect(() => {
         if (closedTitle && openedTitle) {
             setHeadHeight({
                 closed:
-                    subtitle && closedSubtitle
+                    shouldShowSubtitleRow && closedSubtitle
                         ? closedSubtitle.height + 4 + closedTitle.height + 24
                         : closedTitle.height + 24,
                 open:
-                    subtitle && openedSubtitle
+                    shouldShowSubtitleRow && openedSubtitle
                         ? openedSubtitle.height + 4 + openedTitle.height + 24
                         : openedTitle.height + 24,
             });
         }
-    }, [closedSubtitle, closedTitle, openedSubtitle, openedTitle, subtitle]);
+    }, [closedSubtitle, closedTitle, openedSubtitle, openedTitle, shouldShowSubtitleRow]);
 
-    // This is used to trigger a rerender, so the head height can be calculate
+    // This is used to trigger a rerender, so the head height can be calculated
     useEffect(() => {
         setIsFirstRender(true);
     }, []);
@@ -115,12 +118,14 @@ const ListItemHead: FC<ListItemHeadProps> = ({
     const handleMouseLeave = useCallback(() => setShouldShowHoverItem(false), []);
 
     const marginTop = useMemo(() => {
-        if (headHeight.closed < 64) {
-            return (64 - headHeight.closed) / 2;
+        const height = headHeight[isOpen ? 'open' : 'closed'];
+
+        if (height < 64) {
+            return (64 - height) / 2;
         }
 
         return 0;
-    }, [headHeight.closed]);
+    }, [headHeight, isOpen]);
 
     const handleTouchStart = useCallback<TouchEventHandler<HTMLDivElement>>(
         (event) => {
@@ -199,18 +204,8 @@ const ListItemHead: FC<ListItemHeadProps> = ({
                             {titleElement}
                         </StyledListItemHeadTitleElement>
                     </StyledListItemHeadTitleContent>
-                    {rightElements?.length === 1 && !shouldShowSingleRightElementCentered && (
-                        <StyledListItemHeadTopRightElement>
-                            {rightElements[0]}
-                        </StyledListItemHeadTopRightElement>
-                    )}
-                    {rightElements && rightElements.length > 1 && rightElements[0] && (
-                        <StyledListItemHeadTopRightElement>
-                            {rightElements[0]}
-                        </StyledListItemHeadTopRightElement>
-                    )}
                 </StyledListItemHeadTitle>
-                {subtitle && (
+                {shouldShowSubtitleRow && (
                     <StyledListItemHeadSubtitle>
                         <StyledListItemHeadSubtitleTextPseudo ref={pseudoSubtitleOpenRef} $isOpen>
                             {subtitle}
@@ -224,16 +219,34 @@ const ListItemHead: FC<ListItemHeadProps> = ({
                         <StyledListItemHeadSubtitleText $isOpen={isOpen}>
                             {subtitle}
                         </StyledListItemHeadSubtitleText>
-                        {rightElements && rightElements.length > 1 && rightElements[1] && (
-                            <StyledListItemHeadBottomRightElement>
-                                {rightElements[1]}
-                            </StyledListItemHeadBottomRightElement>
-                        )}
                     </StyledListItemHeadSubtitle>
                 )}
             </StyledListItemHeadContent>
-            {rightElements?.length === 1 && shouldShowSingleRightElementCentered && (
-                <StyledListItemHeadRightElement>{rightElements[0]}</StyledListItemHeadRightElement>
+            {rightElements && (
+                <StyledListItemHeadRightWrapper
+                    $shouldShowCentered={
+                        rightElements?.length === 1 && shouldShowSingleRightElementCentered
+                    }
+                >
+                    {rightElements?.length === 1 && shouldShowSingleRightElementCentered ? (
+                        <StyledListItemHeadRightElement>
+                            {rightElements[0]}
+                        </StyledListItemHeadRightElement>
+                    ) : (
+                        <>
+                            {rightElements[0] && (
+                                <StyledListItemHeadTopRightElement>
+                                    {rightElements[0]}
+                                </StyledListItemHeadTopRightElement>
+                            )}
+                            {rightElements[1] && (
+                                <StyledListItemHeadBottomRightElement>
+                                    {rightElements[1]}
+                                </StyledListItemHeadBottomRightElement>
+                            )}
+                        </>
+                    )}
+                </StyledListItemHeadRightWrapper>
             )}
             {hoverItem && (
                 <StyledMotionListItemHeadHoverItem
