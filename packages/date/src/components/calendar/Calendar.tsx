@@ -1,6 +1,11 @@
+import { Icon } from '@chayns-components/core';
 import React, { createContext, useMemo, useRef, useState, type FC } from 'react';
 import type { Category, HighlightedDates, Period } from '../../types/calendar';
-import { StyledCalendar } from './Calendar.styles';
+import {
+    StyledCalendar,
+    StyledCalendarArrowWrapper,
+    StyledCalendarContent,
+} from './Calendar.styles';
 
 interface ICalendarContext {
     hoveredDate?: Date;
@@ -117,18 +122,26 @@ const Calendar: FC<CalendarProps> = ({
 
     const calendarContextValue: ICalendarContext = useMemo(
         () => ({
+            maxDate,
+            minDate,
             hoveredDate,
             selectedDates,
             setHoveredDate,
             setSelectedDates,
         }),
-        [hoveredDate, selectedDates],
+        [hoveredDate, maxDate, minDate, selectedDates],
     );
 
     return (
         <StyledCalendar ref={calendarRef}>
             <CalendarContext.Provider value={calendarContextValue}>
-                Kalender
+                <StyledCalendarArrowWrapper>
+                    <Icon icons={['fa fa-angle-left']} />
+                </StyledCalendarArrowWrapper>
+                <StyledCalendarContent>Kalender</StyledCalendarContent>
+                <StyledCalendarArrowWrapper>
+                    <Icon icons={['fa fa-angle-right']} />
+                </StyledCalendarArrowWrapper>
             </CalendarContext.Provider>
         </StyledCalendar>
     );
